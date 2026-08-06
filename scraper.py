@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 def scrape_website(url):
     #*Fetch the website using the request
-    response=requests.get(url,{"User-Agent":"Nozilla/5.0"})
+    response=requests.get(url,{"User-Agent":"Mozilla/5.0"})
     
     soup=BeautifulSoup(response.content,"html.parser")
     
@@ -16,3 +16,12 @@ def scrape_website(url):
     
     return text,title
 
+
+
+def scrape_relevant_links(url):
+    #*Fetch the web from the server using request
+    response=requests.get(url,{"User-Agent":"Mozilla/5.0"})
+    
+    soup=BeautifulSoup(response.content,"html-parser")
+    links=[a.get("href") for a in soup.find_all("a") if a.get("href")]
+    return links
