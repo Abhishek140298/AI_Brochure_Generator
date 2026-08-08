@@ -6,8 +6,23 @@ load_dotenv()
 OPEN_API_KEY=os.getenv("OPENAI_API_KEY")
 client=OpenAI(api_key=OPEN_API_KEY)
 
+
+def get_allContent(url):
+    title,homePageContent=scrape_website(url)
+    combined_content=f"##Homepage \n{homePageContent}\n\n"
+    relevant_links=select_reslevant_links(url)
+    
+    for link in relevant_links:
+        try:
+            page_title,page_content=scrape_website(link["url"])
+            combined_content+=f"##{link["type"]}\n{page_content}\n\n"
+        except Exception as e:
+            print(f"Skipped {link['url']}:{e}")
+            
+    return title ,combined_content            
+
 def generate_brochure(url):
-    text,title=scrape_website(url)
+    title ,text=get_allContent(url)
     trimmed_text=text[:5000]
     system_prompt=(
         "You are an assitant that analyzes the content of a company website "
@@ -54,5 +69,10 @@ def select_reslevant_links(url):
     return result["links"]
  ##Json.loads
     #!response_format in openai client
-brochure=generate_brochure("https://anthropic.com")
-print(brochure)
+# brochure=generate_brochure("https://anthropic.com")
+# print(brochure)
+
+
+if __name__=="__main__":
+    brochure=generate_brochure("https://anthropic.com")
+    print(brochure)
